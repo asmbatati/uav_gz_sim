@@ -155,7 +155,11 @@ if [ ! -d "$ROS2_SRC/eigen_stl_containers" ]; then
     git clone https://github.com/ros/eigen_stl_containers.git
 fi
 
-cd $ROS2_WS && rosdep init && rosdep update && rosdep install --from-paths src --ignore-src -r -y
+# Initialize rosdep only if not already initialized
+if [ ! -f "/etc/ros/rosdep/sources.list.d/20-default.list" ]; then
+    cd $ROS2_WS && rosdep init
+fi
+cd $ROS2_WS && rosdep update && rosdep install --from-paths src --ignore-src -r -y
 
 # Install missing Python dependencies for ROS2 message generation
 echo "Installing Python dependencies..."
