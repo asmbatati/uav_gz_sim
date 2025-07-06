@@ -159,7 +159,7 @@ cd $ROS2_WS && rosdep init && rosdep update && rosdep install --from-paths src -
 
 # Install missing Python dependencies for ROS2 message generation
 echo "Installing Python dependencies..."
-pip3 install lark empy catkin_pkg
+pip3 install --break-system-packages lark empy catkin_pkg
 
 # Install GeographicLib datasets for MAVROS
 echo "Installing GeographicLib datasets..."
