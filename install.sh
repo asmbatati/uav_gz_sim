@@ -310,6 +310,7 @@ if [ ! -d "$ROS2_SRC/uav_gz_sim" ]; then
     cd uav_gz_sim
     git lfs install
     git lfs pull
+    git submodule update --init --recursive
     print_status "uav_gz_sim cloned successfully"
 else
     print_info "Updating existing uav_gz_sim repository..."
@@ -318,6 +319,7 @@ else
     git pull origin main
     git lfs install
     git lfs pull
+    git submodule update --init --recursive
     print_status "uav_gz_sim updated successfully"
 fi
 
@@ -339,6 +341,60 @@ if [ -f "$ROS2_SRC/uav_gz_sim/scripts/bash.sh" ]; then
 else
     print_warning "bash.sh not found in uav_gz_sim/scripts/"
 fi
+
+# Check for QGroundControl AppImage and download if not present
+print_info "Setting up QGroundControl..."
+
+# Install QGroundControl dependencies
+print_info "Installing QGroundControl dependencies..."
+sudo apt-get update -qq
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y --quiet --no-install-recommends install \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-libav \
+    gstreamer1.0-gl \
+    libfuse2 \
+    libxcb-xinerama0 \
+    libxkbcommon-x11-0 \
+    libxcb-cursor-dev
+
+# Remove modem manager that interferes with serial ports
+print_info "Removing modem manager (interferes with serial ports)..."
+sudo apt-get remove modemmanager -y || true
+
+# Add user to dialout group for serial port access
+print_info "Adding user to dialout group for serial port access..."
+sudo usermod -a -G dialout $USER
+
+print_status "QGroundControl dependencies installed"
+
+# Check for QGroundControl AppImage
+QGC_FILENAME="QGroundControl-x86_64.AppImage"
+QGC_PATH="$DEV_DIR/$QGC_FILENAME"
+QGC_SYMLINK="$DEV_DIR/QGroundControl.AppImage"
+
+if [ -f "$QGC_PATH" ]; then
+    print_status "QGroundControl AppImage found at $QGC_PATH"
+else
+    print_info "QGroundControl AppImage not found. Downloading..."
+    
+    # Download QGroundControl AppImage with correct filename
+    if wget -q --show-progress -O "$QGC_PATH" "https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl-x86_64.AppImage"; then
+        # Make it executable
+        chmod +x "$QGC_PATH"
+        print_status "QGroundControl AppImage downloaded and made executable"
+    else
+        print_error "Failed to download QGroundControl AppImage"
+        print_warning "You can manually download it from: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html"
+    fi
+fi
+
+# Create symlink for backward compatibility with existing alias
+if [ -f "$QGC_PATH" ] && [ ! -L "$QGC_SYMLINK" ]; then
+    ln -sf "$QGC_FILENAME" "$QGC_SYMLINK"
+    print_status "Created symlink for QGroundControl compatibility"
+fi
+
+print_warning "Note: You may need to logout and login again for serial port permissions to take effect"
 
 print_section "Setting up PX4-Autopilot"
 
