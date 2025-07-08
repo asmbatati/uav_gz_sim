@@ -2,7 +2,10 @@
 
 <div align="center">
 
-![PX4 Logo](media/px4_logo.png) ![ROS2 Logo](media/ros2_logo.png) ![Gazebo Logo](media/gazebo_logo.png) ![Docker Logo](media/docker_logo.png)
+<img src="media/px4_logo.png" alt="PX4 Logo" width="90" />
+<img src="media/ros2_logo.png" alt="ROS2 Logo" width="90" />
+<img src="media/gazebo_logo.png" alt="Gazebo Logo" width="90" />
+<img src="media/docker_logo.png" alt="Docker Logo" width="90" />
 
 **A comprehensive UAV simulation framework integrating PX4, ROS 2 Jazzy, and Gazebo Harmonic**
 
@@ -30,14 +33,47 @@ This simulation environment provides a complete UAV development and testing plat
 
 <div align="center">
 
-| Component | Description | Version |
-|-----------|-------------|---------|
-| ![ROS2](media/ros2_logo.png) | **ROS 2 Jazzy** | Complete robotics middleware | Latest |
-| ![Gazebo](media/gazebo_logo.png) | **Gazebo Harmonic** | Physics simulation engine | Latest |
-| ![PX4](media/px4_logo.png) | **PX4 Autopilot** | Flight control stack | v1.14+ |
-| ![QGC](media/qgc_logo.png) | **QGroundControl** | Ground control station | Latest |
-| ![RViz2](media/rviz2_logo.png) | **RViz2** | 3D visualization tool | Jazzy |
-| ![Zenoh](media/zenoh_logo.png) | **Zenoh Middleware** | High-performance communication | Latest |
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Description</th>
+      <th>Version</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><img src="media/ros2_logo.png" alt="ROS2" width="40"></td>
+      <td><strong>ROS 2 Jazzy</strong><br>Complete robotics middleware</td>
+      <td>Latest</td>
+    </tr>
+    <tr>
+      <td><img src="media/gazebo_logo.png" alt="Gazebo" width="40"></td>
+      <td><strong>Gazebo Harmonic</strong><br>Physics simulation engine</td>
+      <td>Latest</td>
+    </tr>
+    <tr>
+      <td><img src="media/px4_logo.png" alt="PX4" width="40"></td>
+      <td><strong>PX4 Autopilot</strong><br>Flight control stack</td>
+      <td>v1.14+</td>
+    </tr>
+    <tr>
+      <td><img src="media/qgc_logo.png" alt="QGC" width="40"></td>
+      <td><strong>QGroundControl</strong><br>Ground control station</td>
+      <td>Latest</td>
+    </tr>
+    <tr>
+      <td><img src="media/rviz2_logo.png" alt="RViz2" width="40"></td>
+      <td><strong>RViz2</strong><br>3D visualization tool</td>
+      <td>Jazzy</td>
+    </tr>
+    <tr>
+      <td><img src="media/zenoh_logo.png" alt="Zenoh" width="40"></td>
+      <td><strong>Zenoh Middleware</strong><br>High-performance communication</td>
+      <td>Latest</td>
+    </tr>
+  </tbody>
+</table>
 
 </div>
 
