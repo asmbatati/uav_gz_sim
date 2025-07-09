@@ -282,6 +282,7 @@ graph TB
     %% The two core simulation loops
     A -- Physics Interface --> D
     A -- MAVLink (UDP) --> E
+```
 
 ## 📚 Documentation & Resources
 
