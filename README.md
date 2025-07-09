@@ -324,6 +324,23 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
+### Special Thanks
+
+We extend our heartfelt gratitude to the following individuals and organizations for their invaluable contributions to the UAV simulation community:
+
+- **[RIOTU Lab](https://github.com/riotu-lab)** - AI, Deep Learning, ROS, and IoT research laboratory for their innovative work in autonomous systems
+- **[Dr. Mohamed Abdelkader Zahana](https://github.com/mzahana)** - For his extensive contributions to PX4 integration, multi-agent systems, and drone control frameworks
+- **[Eng. Khaled Gabr](https://github.com/khaledgabr77)** - For his expertise in autonomous navigation and ROS 2 development
+
+### Code Attribution
+
+Parts of this simulation framework have been refactored and enhanced from the following excellent open-source repositories:
+
+- **[d2dtracker_sim](https://github.com/mzahana/d2dtracker_sim)** - Drone-to-drone tracking simulation framework
+- **[gps_denied_navigation_sim](https://github.com/riotu-lab/gps_denied_navigation_sim)** - GPS-denied navigation simulation environment
+
+### Community Acknowledgments
+
 - **PX4 Development Team** - For the excellent autopilot software
 - **Open Robotics** - For ROS 2 and Gazebo simulation tools
 - **Eclipse Zenoh** - For high-performance middleware
