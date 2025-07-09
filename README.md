@@ -6,6 +6,8 @@
 <img src="media/ros2_logo.png" alt="ROS2 Logo" width="90" style="vertical-align: middle;" />
 <img src="media/gazebo_logo.png" alt="Gazebo Logo" width="90" style="vertical-align: middle;" />
 <img src="media/docker_logo.png" alt="Docker Logo" width="90" style="vertical-align: middle;" />
+<img src="media/mavros_logo.png" alt="MAVROS Logo" width="90" style="vertical-align: middle;" />
+<img src="media/mavlink_logo.png" alt="MAVLink Logo" width="90" style="vertical-align: middle;" />
 
 **A comprehensive UAV simulation framework integrating PX4, ROS 2 Jazzy, and Gazebo Harmonic**
 
@@ -13,6 +15,8 @@
 [![ROS2](https://img.shields.io/badge/ROS2-Jazzy-green.svg)](https://docs.ros.org/en/jazzy/)
 [![Gazebo](https://img.shields.io/badge/Gazebo-Harmonic-orange.svg)](https://gazebosim.org/)
 [![PX4](https://img.shields.io/badge/PX4-v1.14+-red.svg)](https://px4.io/)
+[![MAVROS](https://img.shields.io/badge/MAVROS-Jazzy-blue.svg)](https://github.com/mavlink/mavros)
+[![MAVLink](https://img.shields.io/badge/MAVLink-v2.0-purple.svg)](https://mavlink.io/)
 
 </div>
 
@@ -22,12 +26,14 @@ This simulation environment provides a complete UAV development and testing plat
 
 ### 🌟 Key Features
 
-- **🔧 Complete Toolchain**: PX4 + ROS 2 Jazzy + Gazebo Harmonic integration
+- **🔧 Complete Toolchain**: PX4 + ROS 2 Jazzy + Gazebo Harmonic + MAVROS integration
 - **🎮 Advanced Models**: X500 quadcopter with Intel RealSense D435 depth camera
 - **🌐 Multi-Environment**: Support for various simulation worlds and scenarios
 - **🐳 Docker Ready**: Containerized development environment for consistent setup
 - **🚀 High Performance**: Optimized for real-time simulation and visualization
-- **📡 Communication**: Built-in XRCE-DDS and Zenoh middleware support
+- **📡 Communication Middleware**: Zenoh middleware support
+- **📡 Dual Communication**: Built-in XRCE-DDS and MAVLink/MAVROS support
+- **🛰️ Protocol Flexibility**: Choose between native uXRCE-DDS or classic MAVLink bridges
 
 ## 🛠️ What's Included
 
@@ -56,6 +62,16 @@ This simulation environment provides a complete UAV development and testing plat
       <td><img src="media/px4_logo.png" alt="PX4" width="40"></td>
       <td><strong>PX4 Autopilot</strong><br>Flight control stack</td>
       <td>v1.14+</td>
+    </tr>
+    <tr>
+      <td><img src="media/mavros_logo.png" alt="MAVROS" width="40"></td>
+      <td><strong>MAVROS</strong><br>MAVLink-ROS 2 bridge</td>
+      <td>Jazzy</td>
+    </tr>
+    <tr>
+      <td><img src="media/mavlink_logo.png" alt="MAVLink" width="40"></td>
+      <td><strong>MAVLink Protocol</strong><br>Micro air vehicle communication</td>
+      <td>v2.0</td>
     </tr>
     <tr>
       <td><img src="media/qgc_logo.png" alt="QGC" width="40"></td>
@@ -165,15 +181,16 @@ chmod +x install.sh
 - **ROS 2 Jazzy Desktop**: Complete robotics development stack
 - **Gazebo Harmonic**: Latest simulation environment
 - **PX4 Development Tools**: Firmware development and simulation
+- **MAVROS**: MAVLink-ROS 2 communication bridge
 - **Python Dependencies**: NumPy, Matplotlib, PyMAVLink, and more
-- **Communication Middleware**: Zenoh, XRCE-DDS
+- **Communication Middleware**: Zenoh, XRCE-DDS, MAVLink protocols
 
 ## 🏗️ Installation Details
 
 The installation script automatically:
 
 1. **🔍 Environment Detection**: Identifies container vs host environment
-2. **📦 Dependency Management**: Installs all required packages
+2. **📦 Dependency Management**: Installs all required packages (ROS 2, Gazebo, MAVROS, etc.)
 3. **🔧 System Configuration**: Sets up permissions and environment variables
 4. **🌐 Repository Cloning**: Downloads PX4, MAVROS, and simulation packages
 5. **🏗️ Building**: Compiles all ROS 2 packages with smart retry logic
@@ -256,94 +273,182 @@ source install/setup.bash
 
 ## 🤝 Communication Architecture
 
-### Architecture 1: The Native PX4-ROS 2 Bridge (uXRCE-DDS)
+This simulation environment supports **two distinct communication architectures** that allow ROS 2 to interface with PX4. Each has its own advantages and use cases, giving you the flexibility to choose the best approach for your specific needs.
 
-This is the modern, official, and recommended architecture by the PX4 development team for ROS 2 integration. It offers the highest performance by connecting directly to PX4's internal uORB messaging system.
+---
 
-Bridge: A lightweight uxrce_dds_client runs on PX4, which talks to a Micro-XRCE-DDS Agent on the companion computer.
+### 🚀 Architecture 1: Native PX4-ROS 2 Bridge (uXRCE-DDS)
 
-Protocol: This bridge directly translates PX4's internal uORB messages to and from the DDS standard that ROS 2 uses.
+<div align="center">
+<img src="media/zenoh_logo.png" alt="uXRCE-DDS" width="60" style="vertical-align: middle;" />
+<strong>Modern • Official • High Performance</strong>
+</div>
 
-Key Advantage: High performance and low latency due to the direct, native integration.
+**Overview:** This is the **modern, official, and recommended** architecture by the PX4 development team for ROS 2 integration. It provides the highest performance by connecting directly to PX4's internal uORB messaging system.
 
-```mermaid
-graph TD
-    subgraph "Companion Computer (ROS 2)"
-        C[ROS 2 Nodes]
-        B[Micro-XRCE-DDS Agent]
-        F[RViz2]
-        H[ros_gz_bridge]
-    end
+#### 🔧 How It Works
+- **Bridge Component**: A lightweight `uxrce_dds_client` runs directly on PX4
+- **Communication**: Talks to a `Micro-XRCE-DDS Agent` on the companion computer
+- **Protocol**: Directly translates PX4's internal uORB messages to/from DDS standard
+- **Integration**: Makes PX4's uORB topics appear as native ROS 2 topics
 
-    subgraph "Simulation Environment"
-        A[PX4 SITL]
-        D[Gazebo]
-    end
-
-    subgraph "Ground Control"
-        E[QGroundControl]
-    end
-
-    %% Connections for Architecture 1
-    A -- "uORB / DDS" --> B
-    B <--> C
-    A -- "Physics Interface" --> D
-    D -- "ROS 2 Topics" --> H
-    H <--> C
-    C --> F
-    A -- "MAVLink (UDP)" --> E
-```
-
-In this architecture: The Agent acts as a proxy, making PX4's uORB topics appear as native ROS 2 topics in the DDS global data space.
-
-### Architecture 2: The Classic MAVLink Bridge (MAVROS)
-
-This is the classic, highly mature, and versatile architecture. It uses MAVLink as the communication protocol, which is the standard for many autopilots, not just PX4.
-
-Bridge: The mavros ROS 2 node runs on the companion computer.
-
-Protocol: PX4 communicates externally using the MAVLink protocol, which the mavros node then translates into ROS 2 topics and services.
-
-Key Advantage: Battle-tested maturity and supports other autopilots like ArduPilot, making it a versatile choice.
-
+#### ⚡ Key Advantages
+- **High Performance**: Direct, native integration with minimal overhead
+- **Low Latency**: No protocol conversion delays
+- **Official Support**: Maintained by PX4 development team
+- **Future-Proof**: Designed for modern ROS 2 ecosystem
 
 ```mermaid
 graph TD
-    subgraph "Companion Computer (ROS 2)"
-        C[ROS 2 Nodes]
-        B[MAVROS Node]
-        F[RViz2]
-        H[ros_gz_bridge]
+    subgraph "🖥️ Companion Computer (ROS 2 Ecosystem)"
+        C[🤖 ROS 2 Nodes]
+        B[🌉 Micro-XRCE-DDS Agent]
+        F[👁️ RViz2 Visualization]
+        H[🔗 ros_gz_bridge]
     end
 
-    subgraph "Simulation Environment"
-        A[PX4 SITL]
-        D[Gazebo]
+    subgraph "🌍 Simulation Environment"
+        A[🚁 PX4 SITL Autopilot]
+        D[🎮 Gazebo Physics Engine]
     end
 
-    subgraph "Ground Control"
-        E[QGroundControl]
+    subgraph "📱 Ground Control"
+        E[🎛️ QGroundControl]
     end
 
-    %% Connections for Architecture 2
-    A -- "MAVLink (UDP)" --> B
-    B <--> C
-    A -- "Physics Interface" --> D
-    D -- "ROS 2 Topics" --> H
-    H <--> C
-    C --> F
-    A -- "MAVLink (UDP)" --> E
+    %% Primary Data Flow (uXRCE-DDS)
+    A -.->|"⚡ uORB → DDS<br/>Native Bridge"| B
+    B <-->|"📡 ROS 2 Topics<br/>High Performance"| C
+    
+    %% Simulation Integration
+    A <-->|"🔌 Physics Interface<br/>Real-time Sync"| D
+    D -->|"📊 Sensor Data<br/>ROS 2 Topics"| H
+    H <-->|"🔄 Gazebo ↔ ROS 2"| C
+    
+    %% Visualization & Monitoring
+    C -->|"📈 State Visualization"| F
+    A -.->|"📻 MAVLink UDP<br/>Telemetry"| E
+
+    %% Styling
+    classDef primary fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef simulation fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef ground fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    
+    class A,B,C primary
+    class D,H simulation
+    class E,F ground
 ```
 
-In this architecture: The MAVROS Node is the central translator, converting all MAVLink messages from PX4 into standard ROS 2 topics for your other nodes to use.
+---
 
+### 🛰️ Architecture 2: Classic MAVLink Bridge (MAVROS)
 
+<div align="center">
+<img src="media/mavros_logo.png" alt="MAVROS" width="40" style="vertical-align: middle;" />
+<img src="media/mavlink_logo.png" alt="MAVLink" width="40" style="vertical-align: middle;" />
+<strong>Battle-Tested • Versatile • Cross-Platform</strong>
+</div>
+
+**Overview:** This is the **classic, highly mature, and versatile** architecture that has been the backbone of drone development for years. It uses MAVLink as the communication protocol, which is the industry standard for autopilot communication.
+
+#### 🔧 How It Works
+- **Bridge Component**: The `mavros` ROS 2 node runs on the companion computer
+- **Communication**: PX4 communicates using the standard MAVLink protocol
+- **Protocol**: MAVLink messages are translated into ROS 2 topics and services
+- **Compatibility**: Works with multiple autopilots (PX4, ArduPilot, etc.)
+
+#### 🛡️ Key Advantages
+- **Battle-Tested**: Years of production use and community validation
+- **Cross-Platform**: Supports multiple autopilot systems beyond PX4
+- **Mature Ecosystem**: Extensive documentation and community support
+- **Robust**: Well-established error handling and recovery mechanisms
+
+```mermaid
+graph TD
+    subgraph "🖥️ Companion Computer (ROS 2 Ecosystem)"
+        C[🤖 ROS 2 Nodes]
+        B[🌉 MAVROS Bridge Node]
+        F[👁️ RViz2 Visualization]
+        H[🔗 ros_gz_bridge]
+    end
+
+    subgraph "🌍 Simulation Environment"
+        A[🚁 PX4 SITL Autopilot]
+        D[🎮 Gazebo Physics Engine]
+    end
+
+    subgraph "📱 Ground Control"
+        E[🎛️ QGroundControl]
+    end
+
+    %% Primary Data Flow (MAVLink)
+    A -.->|"📻 MAVLink UDP<br/>Industry Standard"| B
+    B <-->|"📡 ROS 2 Topics<br/>Translated Messages"| C
+    
+    %% Simulation Integration
+    A <-->|"🔌 Physics Interface<br/>Real-time Sync"| D
+    D -->|"📊 Sensor Data<br/>ROS 2 Topics"| H
+    H <-->|"🔄 Gazebo ↔ ROS 2"| C
+    
+    %% Visualization & Monitoring
+    C -->|"📈 State Visualization"| F
+    A -.->|"📻 MAVLink UDP<br/>Direct Connection"| E
+
+    %% Styling
+    classDef primary fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef simulation fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef ground fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    
+    class A,B,C primary
+    class D,H simulation
+    class E,F ground
+```
+
+---
+
+### 🤔 Which Architecture Should You Choose?
+
+| Criteria | uXRCE-DDS | MAVROS/MAVLink |
+|----------|-----------|-----------------|
+| **Performance** | ⭐⭐⭐⭐⭐ Highest | ⭐⭐⭐⭐ High |
+| **Latency** | ⭐⭐⭐⭐⭐ Minimal | ⭐⭐⭐ Low |
+| **Maturity** | ⭐⭐⭐ Newer | ⭐⭐⭐⭐⭐ Very Mature |
+| **Community Support** | ⭐⭐⭐ Growing | ⭐⭐⭐⭐⭐ Extensive |
+| **Cross-Platform** | ⭐⭐ PX4 Focused | ⭐⭐⭐⭐⭐ Universal |
+| **Future-Proof** | ⭐⭐⭐⭐⭐ Yes | ⭐⭐⭐⭐ Established |
+
+#### 💡 Recommendations
+
+**Choose uXRCE-DDS if:**
+- You're building new applications with PX4
+- Performance and latency are critical
+- You want the latest, official integration approach
+- You're working primarily with PX4 autopilots
+
+**Choose MAVROS/MAVLink if:**
+- You need maximum compatibility across different autopilots
+- You're working with legacy systems or existing MAVLink infrastructure
+- You prefer battle-tested, production-proven solutions
+- You need extensive community support and documentation
+
+---
+
+### 🔧 Implementation Notes
+
+Both architectures are **fully supported** in this simulation environment:
+
+- **Automatic Setup**: The installation script configures both communication bridges
+- **Runtime Selection**: Switch between architectures based on your launch parameters
+- **Parallel Operation**: Both can run simultaneously for development and testing
+- **Complete Integration**: Full support for sensor data, telemetry, and command interfaces
 
 ## 📚 Documentation & Resources
 
 - **[PX4 Documentation](https://docs.px4.io/)** - Complete PX4 development guide
 - **[ROS 2 Jazzy Docs](https://docs.ros.org/en/jazzy/)** - ROS 2 development resources
 - **[Gazebo Tutorials](https://gazebosim.org/docs)** - Simulation environment guides
+- **[MAVROS Documentation](https://github.com/mavlink/mavros/tree/ros2/mavros)** - MAVLink-ROS 2 bridge documentation
+- **[MAVLink Developer Guide](https://mavlink.io/en/)** - MAVLink protocol specification
 - **[QGroundControl User Guide](https://docs.qgroundcontrol.com/)** - Ground station documentation
 
 ## 🐛 Troubleshooting
@@ -429,3 +534,4 @@ Parts of this simulation framework have been refactored and enhanced from the fo
 [Report Bug](https://github.com/asmbatati/uav_gz_sim/issues) · [Request Feature](https://github.com/asmbatati/uav_gz_sim/issues) · [Documentation](https://github.com/asmbatati/uav_gz_sim/wiki)
 
 </div>
+
