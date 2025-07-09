@@ -256,33 +256,88 @@ source install/setup.bash
 
 ## 🤝 Communication Architecture
 
+### Architecture 1: The Native PX4-ROS 2 Bridge (uXRCE-DDS)
+
+This is the modern, official, and recommended architecture by the PX4 development team for ROS 2 integration. It offers the highest performance by connecting directly to PX4's internal uORB messaging system.
+
+Bridge: A lightweight uxrce_dds_client runs on PX4, which talks to a Micro-XRCE-DDS Agent on the companion computer.
+
+Protocol: This bridge directly translates PX4's internal uORB messages to and from the DDS standard that ROS 2 uses.
+
+Key Advantage: High performance and low latency due to the direct, native integration.
+
 ```mermaid
-graph TB
-    subgraph ROS Ecosystem
+graph TD
+    subgraph "Companion Computer (ROS 2)"
         C[ROS 2 Nodes]
-        H[MAVROS Node]
+        B[Micro-XRCE-DDS Agent]
         F[RViz2]
+        H[ros_gz_bridge]
     end
 
-    subgraph Simulation
+    subgraph "Simulation Environment"
         A[PX4 SITL]
-        D[Gazebo Simulation]
+        D[Gazebo]
     end
 
-    subgraph Ground Control
+    subgraph "Ground Control"
         E[QGroundControl]
     end
 
-    %% Connections
-    A -- MAVLink (UDP) --> H
+    %% Connections for Architecture 1
+    A -- "uORB / DDS" --> B
+    B <--> C
+    A -- "Physics Interface" --> D
+    D -- "ROS 2 Topics" --> H
     H <--> C
-    C <--> F
-    C <--> D
-
-    %% The two core simulation loops
-    A -- Physics Interface --> D
-    A -- MAVLink (UDP) --> E
+    C --> F
+    A -- "MAVLink (UDP)" --> E
 ```
+
+In this architecture: The Agent acts as a proxy, making PX4's uORB topics appear as native ROS 2 topics in the DDS global data space.
+
+### Architecture 2: The Classic MAVLink Bridge (MAVROS)
+
+This is the classic, highly mature, and versatile architecture. It uses MAVLink as the communication protocol, which is the standard for many autopilots, not just PX4.
+
+Bridge: The mavros ROS 2 node runs on the companion computer.
+
+Protocol: PX4 communicates externally using the MAVLink protocol, which the mavros node then translates into ROS 2 topics and services.
+
+Key Advantage: Battle-tested maturity and supports other autopilots like ArduPilot, making it a versatile choice.
+
+
+```mermaid
+graph TD
+    subgraph "Companion Computer (ROS 2)"
+        C[ROS 2 Nodes]
+        B[MAVROS Node]
+        F[RViz2]
+        H[ros_gz_bridge]
+    end
+
+    subgraph "Simulation Environment"
+        A[PX4 SITL]
+        D[Gazebo]
+    end
+
+    subgraph "Ground Control"
+        E[QGroundControl]
+    end
+
+    %% Connections for Architecture 2
+    A -- "MAVLink (UDP)" --> B
+    B <--> C
+    A -- "Physics Interface" --> D
+    D -- "ROS 2 Topics" --> H
+    H <--> C
+    C --> F
+    A -- "MAVLink (UDP)" --> E
+```
+
+In this architecture: The MAVROS Node is the central translator, converting all MAVLink messages from PX4 into standard ROS 2 topics for your other nodes to use.
+
+
 
 ## 📚 Documentation & Resources
 
