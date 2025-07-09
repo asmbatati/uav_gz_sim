@@ -100,12 +100,13 @@ This simulation environment provides a complete UAV development and testing plat
 ### Option 1: Install in your Ubuntu 24 system
 
 ```bash
+cd ~/ && mkdir -p ros2_ws/src && cd ros2_ws/src
 # Clone the repository
 git clone https://github.com/asmbatati/uav_gz_sim.git
 cd uav_gz_sim
 
 # Set environment variables
-export DEV_DIR=$(pwd)/..
+export DEV_DIR=~
 export GIT_USER=your_github_username  # Optional
 export GIT_TOKEN=your_github_token    # Optional
 
@@ -138,6 +139,7 @@ chmod +x docker_run.sh
 Then install:
 
 ```bash
+# This is inside the container
 # Clone the repository
 cd ~/shared_volume
 mkdir -p ros2_ws/src && cd ros2_ws/src
@@ -146,7 +148,7 @@ cd uav_gz_sim
 
 # Run the installation script
 chmod +x install.sh
-./install.sh
+./install.sh #if asked, passwod is "user"
 ```
 
 ## 📋 Prerequisites
@@ -256,14 +258,30 @@ source install/setup.bash
 
 ```mermaid
 graph TB
-    A[PX4 SITL] <--> B[XRCE-DDS Agent]
-    B <--> C[ROS 2 Nodes]
-    C <--> D[Gazebo Simulation]
-    A <--> D
-    C <--> E[QGroundControl]
-    C <--> F[RViz2]
-    G[Zenoh Middleware] <--> C
-```
+    subgraph ROS Ecosystem
+        C[ROS 2 Nodes]
+        H[MAVROS Node]
+        F[RViz2]
+    end
+
+    subgraph Simulation
+        A[PX4 SITL]
+        D[Gazebo Simulation]
+    end
+
+    subgraph Ground Control
+        E[QGroundControl]
+    end
+
+    %% Connections
+    A -- MAVLink (UDP) --> H
+    H <--> C
+    C <--> F
+    C <--> D
+
+    %% The two core simulation loops
+    A -- Physics Interface --> D
+    A -- MAVLink (UDP) --> E
 
 ## 📚 Documentation & Resources
 
