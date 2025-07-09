@@ -315,12 +315,35 @@ if [ ! -d "$ROS2_SRC/uav_gz_sim" ]; then
 else
     print_info "Updating existing uav_gz_sim repository..."
     cd $ROS2_SRC/uav_gz_sim
-    git fetch origin
-    git pull origin main
-    git lfs install
-    git lfs pull
-    git submodule update --remote --recursive
-    print_status "uav_gz_sim updated successfully"
+    
+    # Check for local modifications
+    local_changes=$(git status --porcelain)
+    
+    if [[ -n "$local_changes" ]]; then
+        print_warning "Local modifications detected - skipping repository update"
+        echo -e "${YELLOW}Modified files:${NC}"
+        git status --short
+        print_info "Continuing with installation using your current local files..."
+    else
+        print_info "No local modifications found - updating from remote..."
+        if git fetch origin && git pull origin main; then
+            print_status "Repository updated successfully"
+        else
+            print_warning "Failed to update repository - continuing with current version"
+        fi
+    fi
+    
+    # Update Git LFS and submodules only if no local changes
+    if [[ -z "$local_changes" ]]; then
+        git lfs install
+        git lfs pull
+        git submodule update --remote --recursive
+        print_status "Git LFS and submodules updated"
+    else
+        print_info "Skipping Git LFS and submodule updates due to local modifications"
+    fi
+    
+    print_status "uav_gz_sim repository ready for installation"
 fi
 
 # Copy bash.sh to DEV_DIR and setup bashrc sourcing
