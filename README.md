@@ -97,7 +97,7 @@ This simulation environment provides a complete UAV development and testing plat
 
 ## 🚀 Quick Start
 
-### Option 1: Automated Installation (Recommended)
+### Option 1: Install in your Ubuntu 24 system
 
 ```bash
 # Clone the repository
@@ -117,15 +117,36 @@ chmod +x install.sh
 ### Option 2: Docker Environment
 
 ```bash
+# Clone the repository
+git clone https://github.com/asmbatati/uav_gz_sim.git
+git submodule update --init --recursive
+cd uav_gz_sim/px4_ros2_jazzy_docker/docker
+
+# Make the image
+make px4-dev-simulation-ubuntu24
+```
+Then run docker container:
+
+```bash
 # Navigate to Docker setup
-cd px4_ros2_jazzy_docker
+cd ..
 
 # Build and run the container
-chmod +x docker-compose-run.sh
-./docker-compose-run.sh up --profile gpu
+chmod +x docker_run.sh
+./docker_run.sh
+```
+Then install:
 
-# Access the container
-./docker-compose-run.sh shell
+```bash
+# Clone the repository
+cd ~/shared_volume
+mkdir -p ros2_ws/src && cd ros2_ws/src
+git clone https://github.com/asmbatati/uav_gz_sim.git
+cd uav_gz_sim
+
+# Run the installation script
+chmod +x install.sh
+./install.sh
 ```
 
 ## 📋 Prerequisites
