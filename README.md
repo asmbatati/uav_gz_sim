@@ -2,10 +2,10 @@
 
 <div align="center">
 
-<img src="media/px4_logo.png" alt="PX4 Logo" width="90" />
-<img src="media/ros2_logo.png" alt="ROS2 Logo" width="90" />
-<img src="media/gazebo_logo.png" alt="Gazebo Logo" width="90" />
-<img src="media/docker_logo.png" alt="Docker Logo" width="90" />
+<img src="media/px4_logo.png" alt="PX4 Logo" width="90" style="vertical-align: middle;" />
+<img src="media/ros2_logo.png" alt="ROS2 Logo" width="90" style="vertical-align: middle;" />
+<img src="media/gazebo_logo.png" alt="Gazebo Logo" width="90" style="vertical-align: middle;" />
+<img src="media/docker_logo.png" alt="Docker Logo" width="90" style="vertical-align: middle;" />
 
 **A comprehensive UAV simulation framework integrating PX4, ROS 2 Jazzy, and Gazebo Harmonic**
 
