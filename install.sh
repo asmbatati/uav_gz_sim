@@ -310,7 +310,7 @@ if [ ! -d "$ROS2_SRC/uav_gz_sim" ]; then
     cd uav_gz_sim
     git lfs install
     git lfs pull
-    git submodule update --init --recursive
+    git submodule update --init --remote --recursive
     print_status "uav_gz_sim cloned successfully"
 else
     print_info "Updating existing uav_gz_sim repository..."
@@ -319,7 +319,7 @@ else
     git pull origin main
     git lfs install
     git lfs pull
-    git submodule update --init --recursive
+    git submodule update --remote --recursive
     print_status "uav_gz_sim updated successfully"
 fi
 
